@@ -1,0 +1,60 @@
+def connectionString
+def versionText
+def versionValue
+def configText
+def configVer
+
+pipeline {
+    agent none
+	
+    environment {
+		dev_storage_cred = credentials("${env.dev_storage_cred}")
+		upd_storage_cred = credentials("${env.upd_storage_cred}")
+		prd_storage_cred = credentials("${env.prd_storage_cred}")
+		prd_ib_cred = credentials("${env.prd_ib_cred}")
+    }
+
+    stages {
+        stage('Изменение версии системы') {
+			agent { label "${env.dev_agent_label}"}
+            steps {
+				timestamps {
+					cmd("yadt incver -storage-path \"${env.dev_storage_path}\" -storage-user ${dev_storage_cred_Usr} -storage-pwd ${dev_storage_cred_Psw} -ver-tmplt ${env.ver_tmplt} -ver-mask ${env.ver_mask} -ver-comment ${env.ver_comment}")
+				}
+            }
+        }
+
+        stage('Выгрузка конфигурации для обновления') {
+            agent { label "${env.dev_agent_label}"}
+            steps {
+                timestamps {
+                    cmd("yadt makecf -storage-path \"${env.dev_storage_path}\" -storage-user ${dev_storage_cred_Usr} -storage-pwd ${dev_storage_cred_Psw} -cf-path \"${env.dev_cf_path}\"");
+                }
+            }
+        }
+        stage('Обновление рабочего хранилища') {
+            agent { label "${env.upd_agent_label}"}
+            steps {
+                timestamps {
+                    cmd("yadt updstorage -storage-path \"${env.prd_storage_path}\" -storage-user ${upd_storage_cred_Usr} -storage-pwd ${upd_storage_cred_Psw} -cf-path \"${env.upd_cf_path}\" -delcf");
+                }
+            }
+        }
+        stage('Обновление рабочей базы') {
+			agent { label "${env.prd_agent_label}"}
+            steps {
+                timestamps {
+					cmd("yadt updib -ib-path \"${env.prd_ib_path}\" -ib-user ${prd_ib_cred_Usr} -ib-pwd ${prd_ib_cred_Psw} -storage-path \"${env.prd_storage_path}\" -storage-user ${prd_storage_cred_Usr} -storage-pwd ${prd_storage_cred_Psw}");
+                }
+            }
+        }
+    }
+}
+
+def cmd(command) {
+    if (isUnix()) {
+        sh "${command}"
+    } else {
+        bat "chcp 65001\n${command}"
+    }
+}
