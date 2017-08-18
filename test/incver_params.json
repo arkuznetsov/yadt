@@ -1,0 +1,6 @@
+{
+    "-storage-path": "tcp://MyStorageServer/MyRepo",
+    "-storage-user": "__Robot",
+    "-storage-pwd": "pa$$w0rd",
+    "-ver-tmplt": "мое_ВерсияПодсистемы"
+ }
