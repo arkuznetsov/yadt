@@ -19,7 +19,7 @@ pipeline {
 			agent { label "${env.dev_agent_label}"}
             steps {
 				timestamps {
-					cmd("yadt incver -storage-path \"${env.dev_storage_path}\" -storage-user ${dev_storage_cred_Usr} -storage-pwd ${dev_storage_cred_Psw} -ver-tmplt ${env.ver_tmplt} -ver-mask ${env.ver_mask} -ver-comment ${env.ver_comment}")
+					cmd("yadt incver -storage-path \"${env.dev_storage_path}\" -storage-user ${dev_storage_cred_Usr} -storage-pwd ${dev_storage_cred_Psw} -ver-tmplt ${env.ver_tmplt} -ver-mask ${env.ver_mask} -ver-comment \"${env.ver_comment}\"")
 				}
             }
         }
