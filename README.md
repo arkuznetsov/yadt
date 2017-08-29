@@ -13,11 +13,12 @@
 ## Возможные команды
 |||
 |-|-|
-| * **help** | - Вывод справки по параметрам |
-| * **incver** | - Изменение версии подсистемы конфигурации |
-| * **makecf** | - Создание cf-файла из последней версии указанного хранилища |
-| * **updstorage** | - Обновление хранилища конфигурации из указанного cf-файла |
-| * **updib** | - Обновление конфигурации ИБ из указанного хранилища конфигурации |
+| **help** | - Вывод справки по параметрам |
+| **incver** | - Изменение версии подсистемы конфигурации |
+| **makecf** | - Создание cf-файла из последней версии указанного хранилища |
+| **updstorage** | - Обновление хранилища конфигурации из указанного cf-файла |
+| **updib** | - Обновление конфигурации ИБ из указанного хранилища конфигурации |
+| **batch** | - Последовательное выполнение команд по сценариям, заданным в файлах (json) |
 
 
 Для подсказки по конкретной команде наберите help <команда>
@@ -33,6 +34,7 @@
 
 | Параметры: ||
 |-|-|
+| **-params** | - Файлы JSON содержащие значения параметров, могут быть указаны несколько файлов разделенные ";" (параметры командной строки имеют более высокий приоритет)|
 | **-storage-path** | - Адрес хранилища конфигурации |
 | **-storage-user** | - Имя пользователя хранилища конфигурации |
 | **-storage-pwd** | - Пароль пользователя хранилища конфигурации |
@@ -55,7 +57,7 @@
 
 #### Пример:
 ```
-yadt incver -storage-path "tcp://StorgaeServer/MyRepo" -storage-user MyStorageUser -ver-tmplt мое_ВерсияПодсистемы -ver-mask #.#.*.$ -ver-comment "Установлена версия %version%"
+yadt incver -storage-path "tcp://StorageServer/MyRepo" -storage-user MyStorageUser -ver-tmplt мое_ВерсияПодсистемы -ver-mask #.#.*.$ -ver-comment "Установлена версия %version%"
 ```
 
 ## makecf - Создание cf-файл из последней версии указанного хранилища
@@ -65,6 +67,7 @@ yadt incver -storage-path "tcp://StorgaeServer/MyRepo" -storage-user MyStorageUs
 
 | Параметры: ||
 |-|-|
+| **-params** | - Файлы JSON содержащие значения параметров, могут быть указаны несколько файлов разделенные ";" (параметры командной строки имеют более высокий приоритет)|
 | **-storage-path** | - Адрес хранилища конфигурации |
 | **-storage-user** | - Имя пользователя хранилища конфигурации |
 | **-storage-pwd** | - Пароль пользователя хранилища конфигурации |
@@ -74,7 +77,7 @@ yadt incver -storage-path "tcp://StorgaeServer/MyRepo" -storage-user MyStorageUs
 
 #### Пример:
 ```
-yadt makecf -storage-path "tcp://StorgaeServer/MyRepo" -storage-user MyStorageUser -cf-path d:\tmp\1cv8.cf
+yadt makecf -storage-path "tcp://StorageServer/MyRepo" -storage-user MyStorageUser -cf-path d:\tmp\1cv8.cf
 ```
 
 ## updstorage - Обновление хранилища конфигурации из указанного cf-файла
@@ -83,6 +86,7 @@ yadt makecf -storage-path "tcp://StorgaeServer/MyRepo" -storage-user MyStorageUs
 
 | Параметры: ||
 |-|-|
+| **-params** | - Файлы JSON содержащие значения параметров, могут быть указаны несколько файлов разделенные ";" (параметры командной строки имеют более высокий приоритет)|
 | **-storage-path** | - Адрес хранилища конфигурации |
 | **-storage-user** | - Имя пользователя хранилища конфигурации |
 | **-storage-pwd** | - Пароль пользователя хранилища конфигурации |
@@ -107,6 +111,7 @@ yadt updstorage  -storage-path "tcp://StorageServer/MyRepo" -storage-user MyStor
 
 | Параметры: ||
 |-|-|
+| **-params** | - Файлы JSON содержащие значения параметров, могут быть указаны несколько файлов разделенные ";" (параметры командной строки имеют более высокий приоритет)|
 | **-ib-path** | - Адрес ИБ для обновления |
 | **-ib-user** | - Имя пользователя ИБ |
 | **-ib-pwd** | - Пароль пользователя ИБ |
@@ -121,6 +126,51 @@ yadt updstorage  -storage-path "tcp://StorageServer/MyRepo" -storage-user MyStor
 #### Пример:
 ```
 yadt updib  -ib-path "/FMyServer\MyProductionDB" -ib-user Admin -ib-pwd P@ssw0rd -storage-path "tcp://StorageServer/MyRepo" -storage-user MyStorageUser
+```
+
+
+## batch - Выполнить сценарий
+
+Последовательно выполняет команды указнные в файле JSON
+
+
+| Параметры: ||
+|-|-|
+| **\<Сценарии\>** | - Файлы JSON содержащие команды и значения параметров, могут быть указаны несколько файлов разделенные "";"" (обработка файлов выполняется в порядке следования) |
+
+
+#### Пример:
+```
+yadt batch "./deploy_scenario.json"
+```
+
+#### Пример сценария:
+```
+{
+    "params": {
+        "-storage-path": "tcp://MyServer/MyStorage",
+        "-storage-user": "__Robot",
+        "-storage-pwd": "Pa@ssw0rd"
+    },
+    "stages": {
+        "Изменение версии": {
+            "description": "Изменение версии",
+            "tool": "yadt",
+            "command": "incver",
+            "params": {
+                "-ver-tmplt": "мое_ВерсияПодсистемы"
+            }
+        },
+        "Выгрузка конфигурации": {
+            "description": "Выгрузка конфигурации",
+            "tool": "yadt",
+            "command": "makecf",
+            "params": {
+                "-cf-path": "d:\\tmp\\1cv8.cf"
+            }
+        }
+    }
+}
 ```
 
 ## Использование c Jenkins

@@ -1,0 +1,41 @@
+{
+    "params": {
+        "-storage-path": "tcp://MyServer/MyStorage",
+        "-storage-user": "__Robot",
+        "-storage-pwd": "P@ssw0rd"
+    },
+    "stages": {
+        "Изменение версии": {
+            "description": "Изменение версии",
+            "tool": "yadt",
+            "command": "incver",
+            "params": {
+                "-ver-tmplt": "мое_ВерсияПодсистемы"
+            }
+        },
+        "Выгрузка конфигурации": {
+            "description": "Выгрузка конфигурации",
+            "tool": "yadt",
+            "command": "makecf",
+            "params": {
+                "-cf-path": "d:\\tmp\\1cv8.cf"
+            }
+        },
+        "Обновление рабочего хранилища": {
+            "description": "Обновление рабочего хранилища",
+            "tool": "yadt",
+            "command": "updstorage",
+            "params": {
+                "-storage-path": "tcp://MyServer/MyProdStorage",
+                "-storage-user": "upd_Robot",
+                "-storage-pwd": "updP@ssw0rd",
+                "-ib-path": "P@ssw0rd",
+                "-ib-user": "P@ssw0rd",
+                "-ib-pwd": "P@ssw0rd",
+                "-upd-comment": "Выполнено обновление",
+                "-cf-path": "d:\\tmp\\1cv8.cf",
+                "-delcf": "true"
+            }
+        }
+    }
+}

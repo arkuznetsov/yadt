@@ -19,7 +19,7 @@ pipeline {
 			agent { label "${env.dev_agent_label}"}
             steps {
 				timestamps {
-					cmd("yadt incver -storage-path \"${env.dev_storage_path}\" -storage-user ${dev_storage_cred_Usr} -storage-pwd ${dev_storage_cred_Psw} -ver-tmplt ${env.ver_tmplt} -ver-mask ${env.ver_mask} -ver-comment ${env.ver_comment}")
+					cmd("yadt incver -storage-path \"${env.dev_storage_path}\" -storage-user ${dev_storage_cred_Usr} -storage-pwd ${dev_storage_cred_Psw} -ver-tmplt ${env.ver_tmplt} -ver-mask ${env.ver_mask} -ver-comment \"${env.ver_comment}\"")
 				}
             }
         }
@@ -36,7 +36,7 @@ pipeline {
             agent { label "${env.upd_agent_label}"}
             steps {
                 timestamps {
-                    cmd("yadt updstorage -storage-path \"${env.prd_storage_path}\" -storage-user ${upd_storage_cred_Usr} -storage-pwd ${upd_storage_cred_Psw} -cf-path \"${env.upd_cf_path}\" -delcf");
+                    cmd("yadt updstorage -storage-path \"${env.prd_storage_path}\" -storage-user ${upd_storage_cred_Usr} -storage-pwd ${upd_storage_cred_Psw} -ib-path \"${env.upd_ib_path}\" -cf-path \"${env.upd_cf_path}\" -delcf");
                 }
             }
         }
